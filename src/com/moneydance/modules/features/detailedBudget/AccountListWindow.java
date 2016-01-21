@@ -23,8 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.moneydance.apps.md.model.Account;
-import com.moneydance.apps.md.model.RootAccount;
+import com.infinitekind.moneydance.model.Account;
 import com.moneydance.awt.AwtUtil;
 
 /** Window used for Account List interface
@@ -37,20 +36,20 @@ public class AccountListWindow
 {
   private static final long serialVersionUID = 1L;
   
-  private Main extension;
-  private JTextArea accountListArea;
-  private JButton clearButton;
-  private JButton closeButton;
-  private JTextField inputArea;
+  private final Main extension;
+  private final JTextArea accountListArea;
+  private final JButton clearButton;
+  private final JButton closeButton;
+  private final JTextField inputArea;
 
-  public AccountListWindow(Main extension) {
+  public AccountListWindow(final Main extension) {
     super("Account List Console");
     this.extension = extension;
 
     accountListArea = new JTextArea();
     
-    RootAccount root = extension.getUnprotectedContext().getRootAccount();
-    StringBuffer acctStr = new StringBuffer();
+		final Account root = extension.getUnprotectedContext().getCurrentAccountBook().getRootAccount();
+    final StringBuffer acctStr = new StringBuffer();
     if(root!=null) {
       addSubAccounts(root, acctStr);
     }
@@ -61,7 +60,7 @@ public class AccountListWindow
     clearButton = new JButton("Clear");
     closeButton = new JButton("Close");
 
-    JPanel p = new JPanel(new GridBagLayout());
+    final JPanel p = new JPanel(new GridBagLayout());
     p.setBorder(new EmptyBorder(10,10,10,10));
     p.add(new JScrollPane(accountListArea), AwtUtil.getConstraints(0,0,1,1,4,1,true,true));
     p.add(Box.createVerticalStrut(8), AwtUtil.getConstraints(0,2,0,0,1,1,false,false));
@@ -80,10 +79,10 @@ public class AccountListWindow
     AwtUtil.centerWindow(this);
   }
 
-  public static void addSubAccounts(Account parentAcct, StringBuffer acctStr) {
-    int sz = parentAcct.getSubAccountCount();
+  public static void addSubAccounts(final Account parentAcct, final StringBuffer acctStr) {
+    final int sz = parentAcct.getSubAccountCount();
     for(int i=0; i<sz; i++) {
-      Account acct = parentAcct.getSubAccount(i);
+      final Account acct = parentAcct.getSubAccount(i);
       acctStr.append(acct.getFullAccountName());
       acctStr.append("\n");
       addSubAccounts(acct, acctStr);
@@ -91,8 +90,9 @@ public class AccountListWindow
   }
 
 
-  public void actionPerformed(ActionEvent evt) {
-    Object src = evt.getSource();
+  @Override
+public void actionPerformed(final ActionEvent evt) {
+    final Object src = evt.getSource();
     if(src==closeButton) {
       extension.closeConsole();
     }
@@ -102,7 +102,7 @@ public class AccountListWindow
   }
 
   @Override
-public final void processEvent(AWTEvent evt) {
+public final void processEvent(final AWTEvent evt) {
     if(evt.getID()==WindowEvent.WINDOW_CLOSING) {
       extension.closeConsole();
       return;
@@ -115,7 +115,7 @@ public final void processEvent(AWTEvent evt) {
     implements Runnable
   {    
     @Override
-	public void write(int b)
+	public void write(final int b)
       throws IOException
     {
       accountListArea.append(String.valueOf((char)b));
@@ -123,13 +123,14 @@ public final void processEvent(AWTEvent evt) {
     }
 
     @Override
-	public void write(byte[] b)
+	public void write(final byte[] b)
       throws IOException
     {
       accountListArea.append(new String(b));
       repaint();
     }
-    public void run() {
+    @Override
+	public void run() {
       accountListArea.repaint();
     }
   }

@@ -8,6 +8,8 @@ import java.io.IOException;
 import com.moneydance.apps.md.controller.FeatureModule;
 import com.moneydance.apps.md.controller.FeatureModuleContext;
 
+
+
 /** Pluggable module used to give users access to a Account List
     interface to Moneydance.
 */
@@ -22,11 +24,11 @@ public class Main
 public void init() {
     // the first thing we will do is register this module to be invoked
     // via the application toolbar
-    FeatureModuleContext context = getContext();
+    final FeatureModuleContext context = getContext();
     try {
       context.registerFeature(this, "showconsole", getIcon(), getName());
     }
-    catch (Exception e) {
+    catch (final Exception e) {
       e.printStackTrace(System.err);
     }
     
@@ -39,18 +41,19 @@ public void cleanup() {
   
   private Image getIcon() {
     try {
-      ClassLoader cl = getClass().getClassLoader();
-      java.io.InputStream in = 
+      final ClassLoader cl = getClass().getClassLoader();
+      final java.io.InputStream in = 
         cl.getResourceAsStream("/com/moneydance/modules/features/myextension/icon.gif");
       if (in != null) {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
-        byte buf[] = new byte[256];
+        final ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
+        final byte buf[] = new byte[256];
         int n = 0;
-        while((n=in.read(buf, 0, buf.length))>=0)
-          bout.write(buf, 0, n);
+        while((n=in.read(buf, 0, buf.length))>=0) {
+					bout.write(buf, 0, n);
+				}
         return Toolkit.getDefaultToolkit().createImage(bout.toByteArray());
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
     	// TODO(divegeek) Figure out what's appropriate here.
     }
     return null;
@@ -58,7 +61,7 @@ public void cleanup() {
   
   /** Process an invokation of this module with the given URI */
   @Override
-public void invoke(String uri) {
+public void invoke(final String uri) {
     String command = uri;
     //String parameters = "";
     int theIdx = uri.indexOf('?');

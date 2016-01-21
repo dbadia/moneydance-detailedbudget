@@ -1,3 +1,5 @@
 .externalToolBuilders
 dist
 bin
+/.classpath
+/.project

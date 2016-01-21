@@ -1,8 +1,9 @@
 package com.moneydance.modules.features.detailedBudget;
 
-import com.moneydance.apps.md.model.BudgetItem;
-
 import junit.framework.TestCase;
+
+import com.infinitekind.moneydance.model.BudgetItem;
+
 
 public class TestDetailedBudgetWindow extends TestCase
 {
@@ -12,7 +13,7 @@ public class TestDetailedBudgetWindow extends TestCase
 		
 		// Semi-monthly not-prorated, one complete, one partial.
 		r = DetailedBudgetWindow.getBudgetedAmount(20100101, 20101231, 
-												   BudgetItem.INTERVAL_ONCE_SEMI_MONTHLY, 100, 
+				com.infinitekind.moneydance.model.BudgetItem.INTERVAL_ONCE_SEMI_MONTHLY, 100,
 												   20100601, 20100619);
 		assertEquals(200, r); 
 		

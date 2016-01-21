@@ -20,10 +20,14 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.moneydance.apps.md.model.BudgetList;
+import com.infinitekind.moneydance.model.Account;
+import com.infinitekind.moneydance.model.AccountBook;
+import com.infinitekind.moneydance.model.Budget;
+import com.infinitekind.moneydance.model.BudgetList;
+import com.infinitekind.util.CustomDateFormat;
+import com.moneydance.apps.md.controller.FeatureModuleContext;
 import com.moneydance.awt.AwtUtil;
 import com.moneydance.awt.JDateField;
-import com.moneydance.util.CustomDateFormat;
 
 /** Window used for Account List interface
   ------------------------------------------------------------------------
@@ -33,48 +37,57 @@ public class BudgetSettingsWindow
   extends JFrame
 {
   private static final long serialVersionUID = 1L;
-  private Main extension;
-  private JComboBox budgetName;
-  private JComboBox budgetPeriod;
-  private JDateField txtStartDate;
-  private JDateField txtEndDate;
+  private final Main extension;
+  private final JComboBox budgetName;
+  private final JComboBox budgetPeriod;
+  private final JDateField txtStartDate;
+  private final JDateField txtEndDate;
   // Subtotal by week, fortnight, month, quarter, year, etc
-  private JComboBox subTotalBy;
-  private JCheckBox includeBudgetedInEachStep;
-  private JCheckBox includeDifferenceInEachStep;
-  private JCheckBox showAllAccounts;
-  private JCheckBox addSubtotalsForParentCategories;
+  private final JComboBox subTotalBy;
+  private final JCheckBox includeBudgetedInEachStep;
+  private final JCheckBox includeDifferenceInEachStep;
+  private final JCheckBox showAllAccounts;
+  private final JCheckBox addSubtotalsForParentCategories;
 
-  private JButton generateButton;
-  private JButton closeButton;
+  private final JButton generateButton;
+  private final JButton closeButton;
   
-  public BudgetSettingsWindow(Main extension) {
+  public BudgetSettingsWindow(final Main extension) {
     super("Budget Settings");
     this.extension = extension;
     System.out.println("Budget Settings");
 
-    JPanel p = new JPanel(new GridBagLayout());
+    final JPanel p = new JPanel(new GridBagLayout());
     p.setBorder(new EmptyBorder(10,10,10,10));
 
     int row = 0;
     // Budget Names
-    JLabel lblBudgetName = new JLabel("Budget:");
+    final JLabel lblBudgetName = new JLabel("Budget:");
     p.add(lblBudgetName,AwtUtil.getConstraints(0, row, 1, 1, 1, 1, false, false, GridBagConstraints.EAST,3));
-    List<String> budgetList = new ArrayList<String>();
+    final List<String> budgetList = new ArrayList<String>();
     budgetList.add("ALL");
     
-    BudgetList bList = extension.getUnprotectedContext().getRootAccount().getBudgetList();
-    for (int i = 0; i < bList.getBudgetCount(); i++) {
-		budgetList.add(bList.getBudget(i).getName());
-	}
+		System.err.println("starting");
+		final FeatureModuleContext context = extension.getUnprotectedContext();
+		System.err.println("context=" + context);
+		final Account account = context.getRootAccount();
+		System.err.println("account=" + account);
+		final AccountBook accoutBook = context.getCurrentAccountBook();
+		System.err.println("accoutBook=" + accoutBook);
+		final BudgetList bList = accoutBook.getBudgets();
+		System.err.println("bList=" + bList);
+		for (final Budget budget : bList.getAllBudgets()) {
+			System.err.println("budget=" + budget);
+			budgetList.add(budget.getName());
+		}
     budgetName = new JComboBox(budgetList.toArray());
     p.add(budgetName,AwtUtil.getConstraints(1, row, 1, 1, 1, 1, false, false, GridBagConstraints.WEST,3));
     row++;
     
     // Budget Period
-    JLabel lblBudgetPeriod = new JLabel("Period:");
+    final JLabel lblBudgetPeriod = new JLabel("Period:");
     p.add(lblBudgetPeriod,AwtUtil.getConstraints(0, row, 1, 1, 1, 1, false, false, GridBagConstraints.EAST,3));
-    String[] periodList = new String[] {
+    final String[] periodList = new String[] {
     	"Month to Date",	
     	"Quarter to Date",
     	"Year to Date",
@@ -88,7 +101,8 @@ public class BudgetSettingsWindow
     };
     budgetPeriod = new JComboBox(periodList);
     budgetPeriod.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+		@Override
+		public void actionPerformed(final ActionEvent e) {
 			System.out.println("Update Dates");
 			updateDates();
 		}
@@ -96,9 +110,9 @@ public class BudgetSettingsWindow
     p.add(budgetPeriod,AwtUtil.getConstraints(1, row, 1, 1, 1, 1, false, false, GridBagConstraints.WEST,3));
     row++;
 
-    CustomDateFormat cdf = new CustomDateFormat("dd/MM/yyyy");
+    final CustomDateFormat cdf = new CustomDateFormat("dd/MM/yyyy");
     // Start Date
-    JLabel lblStartDate = new JLabel("Start Date:");
+    final JLabel lblStartDate = new JLabel("Start Date:");
     p.add(lblStartDate,AwtUtil.getConstraints(0, row, 1, 1, 1, 1, false, false,GridBagConstraints.EAST,3));
     txtStartDate = new JDateField(cdf);
     p.add(txtStartDate,AwtUtil.getConstraints(1, row, 1, 1, 1, 1, false, false,GridBagConstraints.WEST,3));
@@ -106,7 +120,7 @@ public class BudgetSettingsWindow
     row++;
 
     // End Date
-    JLabel lblEndDate = new JLabel("End Date:");
+    final JLabel lblEndDate = new JLabel("End Date:");
     p.add(lblEndDate,AwtUtil.getConstraints(0, row, 1, 1, 1, 1, false, false,GridBagConstraints.EAST,3));
     txtEndDate = new JDateField(cdf);
     p.add(txtEndDate,AwtUtil.getConstraints(1, row, 1, 1, 1, 1, false, false,GridBagConstraints.WEST,3));
@@ -114,9 +128,9 @@ public class BudgetSettingsWindow
     row++;
 
     // Subtotal By
-    JLabel lblSubtotalBy = new JLabel("SubTotal By:");
+    final JLabel lblSubtotalBy = new JLabel("SubTotal By:");
     p.add(lblSubtotalBy,AwtUtil.getConstraints(0, row, 1, 1, 1, 1, false, false,GridBagConstraints.EAST,3));
-    String[] subTotalByList = new String[] {
+    final String[] subTotalByList = new String[] {
     	"None",	
     	"Week",	
     	"Month",
@@ -127,28 +141,28 @@ public class BudgetSettingsWindow
     row++;
 
     // Include Budgeted In each SubTotal
-    JLabel lblIncBudgeted = new JLabel("Budget with Subtotal");
+    final JLabel lblIncBudgeted = new JLabel("Budget with Subtotal");
     p.add(lblIncBudgeted,AwtUtil.getConstraints(0, row, 1, 1, 1, 1, false, false,GridBagConstraints.EAST,3));
     includeBudgetedInEachStep = new JCheckBox();
     p.add(includeBudgetedInEachStep,AwtUtil.getConstraints(1, row, 1, 1, 1, 1, false, false,GridBagConstraints.WEST,3));
     row++;
 
     // Include Difference In each SubTotal
-    JLabel lblIncDiff = new JLabel("Difference with Subtotal");
+    final JLabel lblIncDiff = new JLabel("Difference with Subtotal");
     p.add(lblIncDiff,AwtUtil.getConstraints(0, row, 1, 1, 1, 1, false, false,GridBagConstraints.EAST,3));
     includeDifferenceInEachStep = new JCheckBox();
     p.add(includeDifferenceInEachStep,AwtUtil.getConstraints(1, row, 1, 1, 1, 1, false, false,GridBagConstraints.WEST,3));
     row++;
 
     // Show All Accounts
-    JLabel lblShowAllAccounts = new JLabel("Show All Categories");
+    final JLabel lblShowAllAccounts = new JLabel("Show All Categories");
     p.add(lblShowAllAccounts,AwtUtil.getConstraints(0, row, 1, 1, 1, 1, false, false,GridBagConstraints.EAST,3));
     showAllAccounts = new JCheckBox();
     p.add(showAllAccounts,AwtUtil.getConstraints(1, row, 1, 1, 1, 1, false, false,GridBagConstraints.WEST,3));
     row++;
     
     // Add Subtotals For Parent Categories
-    JLabel lblAddSubtotalsForParentCategories = new JLabel("Subtotals For Parent Categories");
+    final JLabel lblAddSubtotalsForParentCategories = new JLabel("Subtotals For Parent Categories");
     p.add(lblAddSubtotalsForParentCategories,AwtUtil.getConstraints(0, row, 1, 1, 1, 1, false, false,GridBagConstraints.EAST,3));
     addSubtotalsForParentCategories = new JCheckBox();
     p.add(addSubtotalsForParentCategories,AwtUtil.getConstraints(1, row, 1, 1, 1, 1, false, false,GridBagConstraints.WEST,3));
@@ -159,14 +173,16 @@ public class BudgetSettingsWindow
     // Buttons
     generateButton = new JButton("Generate");
     generateButton.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+		@Override
+		public void actionPerformed(final ActionEvent e) {
 			generate();
 		}
 	});
     p.add(generateButton, AwtUtil.getConstraints(0,row,1,0,1,1,false,true));
     closeButton = new JButton("Close");
     closeButton.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+		@Override
+		public void actionPerformed(final ActionEvent e) {
 			BudgetSettingsWindow.this.extension.closeConsole();
 		}
 	});
@@ -188,7 +204,7 @@ public class BudgetSettingsWindow
   
   /** Generate Detailed Budget Report. Open Window. */
   protected void generate() {
-		DetailedBudgetWindow win = new DetailedBudgetWindow(
+		final DetailedBudgetWindow win = new DetailedBudgetWindow(
 				this.extension,
 				(String)budgetName.getSelectedItem(),
 				(String)budgetPeriod.getSelectedItem(),
@@ -208,7 +224,7 @@ public class BudgetSettingsWindow
 /** Update Start and End dates after user selects Period */
   private void updateDates() {
 	  boolean enable = false;
-	  Date now = new Date();
+	  final Date now = new Date();
 	  if (budgetPeriod.getSelectedItem().equals("Month to Date")) {
 		  txtStartDate.setDate(DateUtil.getStartOfMonth(now));
 		  txtEndDate.setDate(now);
@@ -234,17 +250,17 @@ public class BudgetSettingsWindow
 		  txtEndDate.setDate(DateUtil.getEndOfYear(now));
 	  }
 	  else if (budgetPeriod.getSelectedItem().equals("Last Month")) {
-		  Date dt = DateUtil.addMonths(now, -1);
+		  final Date dt = DateUtil.addMonths(now, -1);
 		  txtStartDate.setDate(DateUtil.getStartOfMonth(dt));
 		  txtEndDate.setDate(DateUtil.getEndOfMonth(dt));
 	  }
 	  else if (budgetPeriod.getSelectedItem().equals("Last Quarter")) {
-		  Date dt = DateUtil.addQuarters(now, -1);
+		  final Date dt = DateUtil.addQuarters(now, -1);
 		  txtStartDate.setDate(DateUtil.getStartOfQuarter(dt));
 		  txtEndDate.setDate(DateUtil.getEndOfQuarter(dt));
 	  }
 	  else if (budgetPeriod.getSelectedItem().equals("Last Year")) {
-		  Date dt = DateUtil.addYears(now, -1);
+		  final Date dt = DateUtil.addYears(now, -1);
 		  txtStartDate.setDate(DateUtil.getStartOfYear(dt));
 		  txtEndDate.setDate(DateUtil.getEndOfYear(dt));
 	  }
@@ -256,7 +272,7 @@ public class BudgetSettingsWindow
   }
 
   @Override
-public final void processEvent(AWTEvent evt) {
+public final void processEvent(final AWTEvent evt) {
     if(evt.getID()==WindowEvent.WINDOW_CLOSING) {
       extension.closeConsole();
       return;
